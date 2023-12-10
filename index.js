@@ -2,6 +2,7 @@ import { Telegraf, Markup } from "telegraf"
 import { config } from "dotenv"
 import { getTokenInfo } from "./__api__/index.js"
 import { getAge, getLocaleStr } from "./controllers/index.js"
+import { getLiquidity } from "./__web3__/index.js"
 
 config()
 
@@ -35,9 +36,10 @@ bot.command("scan", async ctx => {
 
                 const mc = getLocaleStr((info.metrics.totalSupply * info.reprPair.price))
                 const age = await getAge(info.creationBlock)
+                const liquidity = await getLiquidity(info.reprPair.id.pair)
 
                 await ctx.replyWithHTML(
-                    `<b>💎 ${info.name} 💎</b>\n\n<b>📌 Contract Address:</b><i>${args[0]}</i>\n\n<b>🔱 Symbol:</b><i>${info.symbol}</i>\n\n<b>🪙 Token Analytics: ⬇️</b>\n<b>---------------------------</b>\n\n<b>📊 Market Cap:$</b><i>${mc}</i>\n\n<b>💲 Price:$</b><i>${info.reprPair.price}</i>\n\n<b>🕐 Age:</b><i>${age}</i>\n\n<b>🔐 Renounced:</b><i>${info.audit.is_contract_renounced ? "Yes ✅" : "No 🚫"}</i>\n\n<b>🛡 Contract Verified:</b><i>${info.audit.codeVerified ? "Yes ✅" : "No 🚫"}</i>`,
+                    `<b>💎 ${info.name} 💎</b>\n\n<b>📌 Contract Address:</b><i>${args[0]}</i>\n\n<b>🔱 Symbol:</b><i>${info.symbol}</i>\n\n<b>🪙 Token Analytics: ⬇️</b>\n<b>---------------------------</b>\n\n<b>📊 Market Cap:$</b><i>${mc}</i>\n\n<b>💲 Price:$</b><i>${info.reprPair.price}</i>\n\n<b>💰 Liquidity:</b><i>${liquidity[1]}WAVAX</i>\n\n<b>🕐 Age:</b><i>${age}</i>\n\n<b>🔐 Renounced:</b><i>${info.audit.is_contract_renounced ? "Yes ✅" : "No 🚫"}</i>\n\n<b>🛡 Contract Verified:</b><i>${info.audit.codeVerified ? "Yes ✅" : "No 🚫"}</i>`,
                     {
                         parse_mode : "HTML",
                         ...Markup.inlineKeyboard([
