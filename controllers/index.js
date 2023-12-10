@@ -10,8 +10,9 @@ export const getLocaleStr = (number) => {
     return number.toLocaleString("en-US", options)
 }
 
-export const getAge = async (time) => {
-    const now = await getBlockTimestamp()
+export const getAge = async (block) => {
+    const now = await getBlockTimestamp("latest")
+    const time = await getBlockTimestamp(block)
     const age = now - time
     console.log(time, now, age)
 

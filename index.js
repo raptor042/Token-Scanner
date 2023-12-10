@@ -37,14 +37,14 @@ bot.command("scan", async ctx => {
                 const age = await getAge(info.creationBlock)
 
                 await ctx.replyWithHTML(
-                    `<b>💎 ${info.name} 💎</b>\n\n<i>🔰 ${info.info.description}</i>\n\n<b>📌 Contract Address:</b><i>${args[0]}</i>\n\n<b>🔱 Symbol:</b><i>${info.symbol}</i>\n\n<b>🪙 Token Analytics: ⬇️</b>\n<b>---------------------------</b>\n\n<b>📊 Market Cap:$</b><i>${mc}</i>\n\n<b>💲 Price:$</b><i>${info.reprPair.price}</i>\n\n<b>🕐 Age:</b><i>${age}</i>\n\n<b>🔐 Renounced:</b><i>${info.audit.is_contract_renounced ? "Yes ✅" : "No 🚫"}</i>\n\n<b>🛡 Contract Verified:</b><i>${info.audit.codeVerified ? "Yes ✅" : "No 🚫"}</i>`,
+                    `<b>💎 ${info.name} 💎</b>\n\n<b>📌 Contract Address:</b><i>${args[0]}</i>\n\n<b>🔱 Symbol:</b><i>${info.symbol}</i>\n\n<b>🪙 Token Analytics: ⬇️</b>\n<b>---------------------------</b>\n\n<b>📊 Market Cap:$</b><i>${mc}</i>\n\n<b>💲 Price:$</b><i>${info.reprPair.price}</i>\n\n<b>🕐 Age:</b><i>${age}</i>\n\n<b>🔐 Renounced:</b><i>${info.audit.is_contract_renounced ? "Yes ✅" : "No 🚫"}</i>\n\n<b>🛡 Contract Verified:</b><i>${info.audit.codeVerified ? "Yes ✅" : "No 🚫"}</i>`,
                     {
                         parse_mode : "HTML",
                         ...Markup.inlineKeyboard([
-                            [Markup.button.url("Website", info.links.website)],
-                            [Markup.button.url("Twitter", info.links.twitter)],
-                            [Markup.button.url("Telegram", info.links.telegram)],
-                            [Markup.button.url("Discord", info.links.discord)]
+                            [Markup.button.url("Website", info.links.website == "" ? "https://t.me" : info.links.website)],
+                            [Markup.button.url("Twitter", info.links.twitter == "" ? "https://t.me" : info.links.twitter)],
+                            [Markup.button.url("Telegram", info.links.telegram == "" ? "https://t.me" : info.links.telegram)],
+                            [Markup.button.url("Discord", info.links.discord == "" ? "https://t.me" : info.links.discord)]
                         ])
                     }
                 )

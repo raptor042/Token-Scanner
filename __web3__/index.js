@@ -7,8 +7,8 @@ export const getProvider = () => {
     return new ethers.JsonRpcProvider(process.env.MAINNET_API_URL)
 }
 
-export const getBlockTimestamp = async () => {
-    const block = await getProvider().getBlock("latest")
+export const getBlockTimestamp = async (tag) => {
+    const block = await getProvider().getBlock(tag)
     console.log(block.timestamp)
 
     return block.timestamp
