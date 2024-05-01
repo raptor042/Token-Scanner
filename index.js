@@ -41,7 +41,6 @@ bot.hears(/^0x/, async ctx => {
                         [Markup.button.url("Website", _info.pair.info.websites.length > 0 ? _info.pair.info.websites[0].url : "https://t.me")],
                         [Markup.button.url("Twitter", _info.pair.info.socials.length > 0 ? _info.pair.info.socials[0].url : "https://t.me")],
                         [Markup.button.url("Telegram", _info.pair.info.socials.length > 1 ? _info.pair.info.socials[1].url : "https://t.me")],
-                        [Markup.button.url("Discord", _info.pair.info.socials.length > 2 ? _info.pair.info.socials[2].url : "https://t.me")],
                         [Markup.button.url("Chart", _info.pair.url)]
                     ])
                 }
