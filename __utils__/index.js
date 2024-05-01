@@ -3,16 +3,16 @@ import { getBlockTimestamp } from "../__web3__/index.js"
 export const getLocaleStr = (number) => {
     const options = {
         style : "decimal",
-        minimumFractionDigits : 2,
+        minimumFractionDigits : 0,
         maximumFractionDigits : 2
     }
 
     return number.toLocaleString("en-US", options)
 }
 
-export const getAge = async (block) => {
-    const now = await getBlockTimestamp("latest")
-    const time = await getBlockTimestamp(block)
+export const getAge = async (ms) => {
+    const now = Date.now() / 1000
+    const time = Number(ms) / 1000
     const age = now - time
     console.log(time, now, age)
 
@@ -22,14 +22,14 @@ export const getAge = async (block) => {
     const minutes = age / 60
 
     if(years >= 1) {
-        return `Created ${years.toFixed()} years ago`
+        return `Created ${years.toFixed()} year(s) ago`
     } else if(years <= 1 && days >= 1) {
-        return `Created ${days.toFixed()} days ago`
+        return `Created ${days.toFixed()} day(s) ago`
     } else if(days <= 1 && hours >= 1) {
-        return `Created ${hours.toFixed()} hours ago`
+        return `Created ${hours.toFixed()} hour(s) ago`
     } else if(days <= 1 && hours <=1 && minutes >= 1) {
-        return `Created ${minutes.toFixed()} minutes ago`
+        return `Created ${minutes.toFixed()} minute(s) ago`
     } else if(days <= 1 && hours <=1 && minutes <= 1 && age >= 1) {
-        return `Created ${age} seconds ago`
+        return `Created ${age} second(s) ago`
     }
 }

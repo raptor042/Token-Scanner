@@ -1,12 +1,9 @@
 import { ethers } from "ethers"
 import { config } from "dotenv"
 import { PAIR_ABI } from "./config.js"
+import { getProvider } from "./init.js"
 
 config()
-
-export const getProvider = () => {
-    return new ethers.JsonRpcProvider(process.env.MAINNET_API_URL)
-}
 
 export const getBlockTimestamp = async (tag) => {
     const block = await getProvider().getBlock(tag)
@@ -15,19 +12,28 @@ export const getBlockTimestamp = async (tag) => {
     return block.timestamp
 }
 
-export const getLiquidity = async (address) => {
-    const pair = new ethers.Contract(
+export const getSupply = async (address, decimals) => {
+    const token = new ethers.Contract(
         address,
         PAIR_ABI,
         getProvider()
     )
 
-    const liquidity = await pair.getReserves()
-    console.log(liquidity)
+    const _supply = await token.totalSupply()
+    const supply = await format(decimals, _supply, "div")
+    console.log(supply)
 
-    const token = ethers.formatEther(liquidity[0])
-    const wavax = ethers.formatEther(liquidity[1])
-    console.log(token, wavax)
+    return supply
+}
 
-    return [Number(token).toFixed(2), Number(wavax).toFixed(2)]
+export const format = async (decimals, value, denominator) => {
+    let fmt_value
+
+    if(denominator == "div") {
+        fmt_value = Number(value) / (10 ** Number(decimals))
+    } else {
+        fmt_value = Number(value) * (10 ** Number(decimals))
+    }
+
+    return fmt_value
 }
