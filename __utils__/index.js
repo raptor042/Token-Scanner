@@ -1,4 +1,14 @@
-import { getBlockTimestamp } from "../__web3__/index.js"
+export const format = (decimals, value, denominator) => {
+    let fmt_value
+
+    if(denominator == "div") {
+        fmt_value = Number(value) / (10 ** Number(decimals))
+    } else {
+        fmt_value = Number(value) * (10 ** Number(decimals))
+    }
+
+    return fmt_value
+}
 
 export const getLocaleStr = (number) => {
     const options = {

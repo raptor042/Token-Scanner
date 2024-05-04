@@ -2,14 +2,36 @@ import { ethers } from "ethers"
 import { config } from "dotenv"
 import { PAIR_ABI } from "./config.js"
 import { getProvider } from "./init.js"
+import { format } from "../__utils__/index.js"
 
 config()
 
-export const getBlockTimestamp = async (tag) => {
-    const block = await getProvider().getBlock(tag)
-    console.log(block.timestamp)
+export const getBalance = async (address) => {
+    const balance = await getProvider().getBalance(address)
+    console.log(ethers.formatEther(balance))
 
-    return block.timestamp
+    return ethers.formatEther(balance)
+}
+
+export const getBlock = async (hash) => {
+    const txn = await getProvider().getTransaction(hash)
+    console.log(txn)
+
+    return txn.blockNumber
+}
+
+export const balanceOf = async (address, decimals) => {
+    const token = new ethers.Contract(
+        address,
+        PAIR_ABI,
+        getProvider()
+    )
+
+    const _balance = await token.balanceOf(address)
+    const balance = await format(decimals, _balance, "div")
+    console.log(balance)
+
+    return balance
 }
 
 export const getSupply = async (address, decimals) => {
@@ -26,14 +48,18 @@ export const getSupply = async (address, decimals) => {
     return supply
 }
 
-export const format = async (decimals, value, denominator) => {
-    let fmt_value
+export const getLogs = async (address, block) => {
+    const token = new ethers.Contract(
+        address,
+        PAIR_ABI,
+        getProvider()
+    )
 
-    if(denominator == "div") {
-        fmt_value = Number(value) / (10 ** Number(decimals))
-    } else {
-        fmt_value = Number(value) * (10 ** Number(decimals))
-    }
+    const filter = token.filters.Transfer()
+    console.log(filter)
 
-    return fmt_value
+    const logs = await token.queryFilter(filter, block, block)
+    console.log(logs, logs.length)
+
+    return logs
 }
