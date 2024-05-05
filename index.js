@@ -87,9 +87,9 @@ bot.hears(/^0x/, async ctx => {
                 {
                     parse_mode : "HTML",
                     ...Markup.inlineKeyboard([
-                        [Markup.button.url("Website", "info" in _info.pair && "websites" in _info.pair.info && _info.pair.info.websites.length > 0 ? _info.pair.info.websites[0].url : "https://t.me")],
-                        [Markup.button.url("Twitter", "info" in _info.pair && "socials" in _info.pair.info && _info.pair.info.socials.length > 0 ? _info.pair.info.socials[0].url : "https://t.me")],
-                        [Markup.button.url("Telegram", "info" in _info.pair && "socials" in _info.pair.info && _info.pair.info.socials.length > 1 ? _info.pair.info.socials[1].url : "https://t.me")],
+                        [Markup.button.url("Website", "info" in _info.pair && "websites" in _info.pair.info && _info.pair.info.websites.length > 0 ? _info.pair.info.websites[0].url : _info.pair.url)],
+                        [Markup.button.url("Twitter", "info" in _info.pair && "socials" in _info.pair.info && _info.pair.info.socials.length > 0 ? _info.pair.info.socials[0].url : _info.pair.url)],
+                        [Markup.button.url("Telegram", "info" in _info.pair && "socials" in _info.pair.info && _info.pair.info.socials.length > 1 ? _info.pair.info.socials[1].url : _info.pair.url)],
                         [Markup.button.url("Chart", _info.pair.url)]
                     ])
                 }
