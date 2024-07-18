@@ -14,7 +14,7 @@ bot.use(Telegraf.log())
 
 bot.command("start", async ctx => {
     try {
-        await ctx.replyWithHTML(`<b>Hello ${ctx.message.from.username} 👋, Welcome to the most effective and efficient token scanner in the Avalanche(AVAX) Blockchain ✅.</b>\n\n<i>🔰 RevBot represents the pinnacle of precision in the token analytics realm. RevBot offers real-time token metrics in a consolidated delivery.</i>\n\n<b>Powered by the RevBot 🤖.</b>`)
+        await ctx.replyWithHTML(`<b>Hello ${ctx.message.from.username} 👋, Welcome to the most effective and efficient token scanner on ETH and Base ✅.</b>\n\n<i>🔰 RevBot represents the pinnacle of precision in the token analytics realm. RevBot offers real-time token metrics in a consolidated delivery.</i>\n\n<b>Powered by the AlphaDevBot 🤖.</b>`)
     } catch (err) {
         await ctx.replyWithHTML("<b>🚨 An error occured while using the bot.</b>")
         console.log(err)
