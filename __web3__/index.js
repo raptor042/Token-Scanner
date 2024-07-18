@@ -3,28 +3,40 @@ import { config } from "dotenv"
 import { PAIR_ABI } from "./config.js"
 import { getProvider } from "./init.js"
 import { format } from "../__utils__/index.js"
+import { getTokenInfoI } from "../__api__/index.js"
 
 config()
 
-export const getBalance = async (address) => {
-    const balance = await getProvider().getBalance(address)
+export const getChain = async (address) => {
+    const token = await getTokenInfoI(address)
+    console.log(token.chain.shortName)
+
+    if(token.chain.shortName == "eth") {
+        return "ethereum"
+    } else {
+        return token.chain.shortName
+    }
+}
+
+export const getBalance = async (address, chain) => {
+    const balance = await getProvider(chain).getBalance(address)
     console.log(ethers.formatEther(balance))
 
     return ethers.formatEther(balance)
 }
 
-export const getBlock = async (hash) => {
-    const txn = await getProvider().getTransaction(hash)
+export const getBlock = async (hash, chain) => {
+    const txn = await getProvider(chain).getTransaction(hash)
     console.log(txn)
 
     return txn.blockNumber
 }
 
-export const balanceOf = async (address, decimals) => {
+export const balanceOf = async (address, decimals, chain) => {
     const token = new ethers.Contract(
         address,
         PAIR_ABI,
-        getProvider()
+        getProvider(chain)
     )
 
     const _balance = await token.balanceOf(address)
@@ -34,11 +46,11 @@ export const balanceOf = async (address, decimals) => {
     return balance
 }
 
-export const getSupply = async (address, decimals) => {
+export const getSupply = async (address, decimals, chain) => {
     const token = new ethers.Contract(
         address,
         PAIR_ABI,
-        getProvider()
+        getProvider(chain)
     )
 
     const _supply = await token.totalSupply()
@@ -48,11 +60,11 @@ export const getSupply = async (address, decimals) => {
     return supply
 }
 
-export const getLogs = async (address, block) => {
+export const getLogs = async (address, block, chain) => {
     const token = new ethers.Contract(
         address,
         PAIR_ABI,
-        getProvider()
+        getProvider(chain)
     )
 
     const filter = token.filters.Transfer()
