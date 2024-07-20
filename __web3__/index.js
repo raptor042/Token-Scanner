@@ -54,7 +54,7 @@ export const getSupply = async (address, decimals, chain) => {
     )
 
     const _supply = await token.totalSupply()
-    const supply = await format(decimals, _supply, "div")
+    const supply = format(decimals, _supply, "div")
     console.log(supply)
 
     return supply

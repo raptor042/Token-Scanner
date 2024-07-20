@@ -47,12 +47,13 @@ bot.hears(/^0x/, async ctx => {
             const owner = await getOwner(address, abi, chain)
 
             const ca = await getCaCreation(address, chain)
-            const balance = await balanceOf(ca.result[0].contractCreator, info.token.decimals, chain)
 
             const supply = await getSupply(address, info.token.decimals, chain)
             const balanceCA = await balanceOf(address, info.token.decimals, chain)
             const clog = (balanceCA / supply) * 100
             console.log(clog)
+
+            const balance = await balanceOf(ca.result[0].contractCreator, info.token.decimals, chain)
 
             let whitelist = false
             let blacklist = false
