@@ -40,7 +40,7 @@ export const balanceOf = async (address, decimals, chain) => {
     )
 
     const _balance = await token.balanceOf(address)
-    const balance = await format(decimals, _balance, "div")
+    const balance = format(decimals, _balance, "div")
     console.log(balance)
 
     return balance
