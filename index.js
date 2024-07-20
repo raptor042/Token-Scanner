@@ -47,7 +47,7 @@ bot.hears(/^0x/, async ctx => {
             const owner = await getOwner(address, abi, chain)
 
             const ca = await getCaCreation(address, chain)
-            const balance = await getBalance(ca.result[0].contractCreator, chain)
+            const balance = await balanceOf(ca.result[0].contractCreator, info.token.decimals, chain)
 
             const supply = await getSupply(address, info.token.decimals, chain)
             const balanceCA = await balanceOf(address, info.token.decimals, chain)
@@ -99,7 +99,7 @@ bot.hears(/^0x/, async ctx => {
             if(info.contractCode.hasProxyCalls) {
                 issues++
             }
-            if(supply > _info.pair.liquidity.base) {
+            if(balance > 0) {
                 issues++
             }
             if(owner !== ethers.ZeroAddress) {
@@ -130,7 +130,7 @@ bot.hears(/^0x/, async ctx => {
                 issues++
             }
 
-            await ctx.replyWithHTML(`<b>💎 ${info.token.name} | ${_chain} 💎</b>\n\n<b>Intel | ⛔️ ${issues} Issue(s) found.</b>\n\n<b>Buy Tax: ${info.simulationResult.buyTax > 0 ? "🚫" : "✅"} ${info.simulationResult.buyTax}%</b>\n\n<b>Sell Tax: ${info.simulationResult.sellTax > 0 ? "🚫" : "✅"} ${info.simulationResult.sellTax}%</b>\n\n<b>Tax Modifiable: ${taxMod ? "🚫" : "✅"} ${taxMod ? "Yes" : "No"}</b>\n\n<b>Clog: ${clog > 0 ? "🚫" : "✅"} ${clog > 0 ? "Yes" : "No"}</b>\n\n<b>Distributed Supply: ${supply > _info.pair.liquidity.base ? "🚫" : "✅"} ${supply > _info.pair.liquidity.base ? "Yes" : "No"}</b>\n\n<b>Ownership Renounced: ${owner !== ethers.ZeroAddress ? "🚫" : "✅"} ${owner == ethers.ZeroAddress ? "Yes" : "No"}</b>\n\n<b>HoneyPot: ${info.honeypotResult.isHoneypot ? "🚫" : "✅"} ${info.honeypotResult.isHoneypot ? "Yes" : "No"}</b>\n\n<b>Open Source: ${!info.contractCode.openSource ? "🚫" : "✅"} ${info.contractCode.openSource ? "Yes" : "No"}</b>\n\n<b>Proxy Contract: ${info.contractCode.isProxy ? "🚫" : "✅"} ${info.contractCode.isProxy ? "Yes" : "No"}</b>\n\n<b>External Calls: ${info.contractCode.hasProxyCalls ? "🚫" : "✅"} ${info.contractCode.hasProxyCalls ? "Yes" : "No"}</b>\n\n<b>Has Whitelist: ${whitelist ? "🚫" : "✅"} ${whitelist ? "Yes" : "No"}</b>\n\n<b>Has Blacklist: ${blacklist ? "🚫" : "✅"} ${blacklist ? "Yes" : "No"}</b>\n\n<b>Mintable: ${mintable ? "🚫" : "✅"} ${mintable ? "Yes" : "No"}</b>\n\n<b>Transfer pausable: ${pausable ? "🚫" : "✅"} ${pausable ? "Yes" : "No"}</b>\n\n<b>Trading Cooldown: ${cooldown ? "🚫" : "✅"} ${cooldown ? "Yes" : "No"}</b>\n\n<b>Is Anti Whale: ${!isAntiWhale ? "🚫" : "✅"} ${isAntiWhale ? "Yes" : "No"}</b>\n\n\n<i>Always DYOR. Scanners are not always 100% accurate.</i>`)
+            await ctx.replyWithHTML(`<b>💎 ${info.token.name} | ${_chain} 💎</b>\n\n<b>Intel | ⛔️ ${issues} Issue(s) found.</b>\n\n<b>Buy Tax: ${info.simulationResult.buyTax > 0 ? "🚫" : "✅"} ${info.simulationResult.buyTax}%</b>\n\n<b>Sell Tax: ${info.simulationResult.sellTax > 0 ? "🚫" : "✅"} ${info.simulationResult.sellTax}%</b>\n\n<b>Tax Modifiable: ${taxMod ? "🚫" : "✅"} ${taxMod ? "Yes" : "No"}</b>\n\n<b>Clog: ${clog > 0 ? "🚫" : "✅"} ${clog > 0 ? "Yes" : "No"}</b>\n\n<b>Distributed Supply: ${balance > 0 ? "🚫" : "✅"} ${balance > 0 ? "Yes" : "No"}</b>\n\n<b>Ownership Renounced: ${owner !== ethers.ZeroAddress ? "🚫" : "✅"} ${owner == ethers.ZeroAddress ? "Yes" : "No"}</b>\n\n<b>HoneyPot: ${info.honeypotResult.isHoneypot ? "🚫" : "✅"} ${info.honeypotResult.isHoneypot ? "Yes" : "No"}</b>\n\n<b>Open Source: ${!info.contractCode.openSource ? "🚫" : "✅"} ${info.contractCode.openSource ? "Yes" : "No"}</b>\n\n<b>Proxy Contract: ${info.contractCode.isProxy ? "🚫" : "✅"} ${info.contractCode.isProxy ? "Yes" : "No"}</b>\n\n<b>External Calls: ${info.contractCode.hasProxyCalls ? "🚫" : "✅"} ${info.contractCode.hasProxyCalls ? "Yes" : "No"}</b>\n\n<b>Has Whitelist: ${whitelist ? "🚫" : "✅"} ${whitelist ? "Yes" : "No"}</b>\n\n<b>Has Blacklist: ${blacklist ? "🚫" : "✅"} ${blacklist ? "Yes" : "No"}</b>\n\n<b>Mintable: ${mintable ? "🚫" : "✅"} ${mintable ? "Yes" : "No"}</b>\n\n<b>Transfer pausable: ${pausable ? "🚫" : "✅"} ${pausable ? "Yes" : "No"}</b>\n\n<b>Trading Cooldown: ${cooldown ? "🚫" : "✅"} ${cooldown ? "Yes" : "No"}</b>\n\n<b>Is Anti Whale: ${!isAntiWhale ? "🚫" : "✅"} ${isAntiWhale ? "Yes" : "No"}</b>\n\n\n<i>Always DYOR. Scanners are not always 100% accurate.</i>`)
         } else {
             await ctx.replyWithHTML("<b>⛔️ Invalid Contract Address.</b>")
         }
