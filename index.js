@@ -1,8 +1,9 @@
 import { Telegraf, Markup } from "telegraf"
 import { config } from "dotenv"
-import { getCACreation, getTokenInfoI, getTokenInfoII } from "./__api__/index.js"
-import { balanceOf, getBalance, getBlock, getChain, getLogs, getSupply } from "./__web3__/index.js"
+import { getCaABI, getCaCreation, getTokenInfoI, getTokenInfoII } from "./__api__/index.js"
+import { balanceOf, getBalance, getBlock, getChain, getLogs, getOwner, getSupply } from "./__web3__/index.js"
 import { format, getAge, getLocaleStr } from "./__utils__/index.js"
+import { ethers } from "ethers"
 
 config()
 
@@ -15,9 +16,9 @@ bot.use(Telegraf.log())
 bot.command("start", async ctx => {
     try {
         await ctx.replyWithHTML(`<b>Hello ${ctx.message.from.username} 👋, Welcome to the most effective and efficient token scanner on ETH and Base ✅.</b>\n\n<i>🔰 RevBot represents the pinnacle of precision in the token analytics realm. RevBot offers real-time token metrics in a consolidated delivery.</i>\n\n<b>Powered by the AlphaDevBot 🤖.</b>`)
-    } catch (err) {
+    } catch (error) {
         await ctx.replyWithHTML("<b>🚨 An error occured while using the bot.</b>")
-        console.log(err)
+        console.log(error)
     }
 })
 
@@ -39,7 +40,126 @@ bot.hears(/^0x/, async ctx => {
             const info = await getTokenInfoI(address)
             const _info = await getTokenInfoII(info.pairAddress, chain)
 
-            const ca = await getCACreation(address, chain)
+            const ABI = await getCaABI(address, chain)
+            const abi = JSON.parse(ABI)
+            console.log(abi)
+
+            const owner = await getOwner(address, abi, chain)
+
+            const ca = await getCaCreation(address, chain)
+            const balance = await getBalance(ca.result[0].contractCreator, chain)
+
+            const supply = await getSupply(address, info.token.decimals, chain)
+            const balanceCA = await balanceOf(address, info.token.decimals, chain)
+            const clog = (balanceCA / supply) * 100
+            console.log(clog)
+
+            let whitelist = false
+            let blacklist = false
+            let taxMod = false
+            let mintable = false
+            let pausable = false
+            let cooldown = false
+            let isAntiWhale = false
+            let issues = 0
+
+            abi.forEach(func => {
+                if(`${func.name}`.includes("whitelist")) {
+                    whitelist = true
+                } else if(`${func.name}`.includes("blacklist")){
+                    blacklist = true
+                } else if(`${func.name}`.includes("taxUpdate")){
+                    taxMod = true
+                } else if(`${func.name}`.includes("mintable")){
+                    mintable = true
+                } else if(`${func.name}`.includes("pausable")){
+                    pausable = true
+                } else if(`${func.name}`.includes("cooldown")){
+                    cooldown = true
+                } else if(`${func.name}`.includes("maxTx")){
+                    isAntiWhale = true
+                }
+            })
+
+            if(info.honeypotResult.isHoneypot) {
+                issues++
+            }
+            if(info.simulationResult.buyTax > 0) {
+                issues++
+            }
+            if(info.simulationResult.sellTax > 0) {
+                issues++
+            }
+            if(!info.contractCode.openSource) {
+                issues++
+            }
+            if(info.contractCode.isProxy) {
+                issues++
+            }
+            if(info.contractCode.hasProxyCalls) {
+                issues++
+            }
+            if(supply > _info.pair.liquidity.base) {
+                issues++
+            }
+            if(owner !== ethers.ZeroAddress) {
+                issues++
+            }
+            if(clog > 0) {
+                issues++
+            }
+            if(whitelist) {
+                issues++
+            }
+            if(blacklist) {
+                issues++
+            }
+            if(taxMod) {
+                issues++
+            }
+            if(mintable) {
+                issues++
+            }
+            if(pausable) {
+                issues++
+            }
+            if(cooldown) {
+                issues++
+            }
+            if(!isAntiWhale) {
+                issues++
+            }
+
+            await ctx.replyWithHTML(`<b>💎 ${info.token.name} | ${_chain} 💎</b>\n\n<b>Intel | ⛔️ ${issues} Issues found.</b>\n\n<b>Buy Tax: ${info.simulationResult.buyTax > 0 ? "🚫" : "✅"} ${info.simulationResult.buyTax}%</b>\n\n<b>Sell Tax: ${info.simulationResult.sellTax > 0 ? "🚫" : "✅"} ${info.simulationResult.sellTax}%</b>\n\n<b>Tax Modifiable: ${taxMod ? "🚫" : "✅"} ${taxMod ? "Yes" : "No"}</b>\n\n<b>Clog: ${clog > 0 ? "🚫" : "✅"} ${clog > 0 ? "Yes" : "No"}</b>\n\n<b>Distributed Supply: ${supply > _info.pair.liquidity.base ? "🚫" : "✅"} ${supply > _info.pair.liquidity.base ? "Yes" : "No"}</b>\n\n<b>Ownership Renounced: ${owner !== ethers.ZeroAddress ? "🚫" : "✅"} ${owner !== ethers.ZeroAddress ? "Yes" : "No"}</b>\n\n<b>HoneyPot: ${info.honeypotResult.isHoneypot ? "🚫" : "✅"} ${info.honeypotResult.isHoneypot ? "Yes" : "No"}</b>\n\n<b>Open Source: ${!info.contractCode.openSource ? "🚫" : "✅"} ${info.contractCode.openSource ? "Yes" : "No"}</b>\n\n<b>Proxy Contract: ${info.contractCode.isProxy ? "🚫" : "✅"} ${info.contractCode.isProxy ? "Yes" : "No"}</b>\n\n<b>External Calls: ${info.contractCode.hasProxyCalls ? "🚫" : "✅"} ${info.contractCode.hasProxyCalls ? "Yes" : "No"}</b>\n\n<b>Has Whitelist: ${whitelist ? "🚫" : "✅"} ${whitelist ? "Yes" : "No"}</b>\n\n<b>Has Blacklist: ${blacklist ? "🚫" : "✅"} ${blacklist ? "Yes" : "No"}</b>\n\n<b>Mintable: ${mintable ? "🚫" : "✅"} ${mintable ? "Yes" : "No"}</b>\n\n<b>Transfer pausable: ${pausable ? "🚫" : "✅"} ${pausable ? "Yes" : "No"}</b>\n\n<b>Trading Cooldown: ${cooldown ? "🚫" : "✅"} ${cooldown ? "Yes" : "No"}</b>\n\n<b>Is Anti Whale: ${!isAntiWhale ? "🚫" : "✅"} ${isAntiWhale ? "Yes" : "No"}</b>\n\n\n<i>Always DYOR. Scanners are not always 100% accurate.</i>`)
+        } else {
+            await ctx.replyWithHTML("<b>⛔️ Invalid Contract Address.</b>")
+        }
+    } catch (error) {
+        await ctx.replyWithHTML("<b>🚨 An error occured while using the bot. Make sure you input the correct token CA on Ethereum.</b>")
+
+        console.log(error)
+    }
+})
+
+bot.command("scan", async ctx => {
+    try {
+        const address = ctx.args[0]
+        console.log(address)
+
+        if(address.length == 42) {
+            const chain = await getChain(address)
+            let _chain
+
+            if(chain == "ethereum") {
+                _chain = "ETH"
+            } else if(chain == "base") {
+                _chain = "BASE"
+            }
+
+            const info = await getTokenInfoI(address)
+            const _info = await getTokenInfoII(info.pairAddress, chain)
+
+            const ca = await getCaCreation(address, chain)
             const balance = await getBalance(ca.result[0].contractCreator, chain)
 
             const supply = await getSupply(address, info.token.decimals, chain)
@@ -106,9 +226,10 @@ bot.hears(/^0x/, async ctx => {
         } else {
             await ctx.replyWithHTML("<b>⛔️ Invalid Contract Address.</b>")
         }
-    } catch (err) {
+    } catch (error) {
         await ctx.replyWithHTML("<b>🚨 An error occured while using the bot. Make sure you input the correct token CA on Ethereum.</b>")
-        console.log(err)
+
+        console.log(error)
     }
 })
 

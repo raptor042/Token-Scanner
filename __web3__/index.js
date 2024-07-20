@@ -75,3 +75,16 @@ export const getLogs = async (address, block, chain) => {
 
     return logs
 }
+
+export const getOwner = async (address, abi, chain) => {
+    const token = new ethers.Contract(
+        address,
+        abi,
+        getProvider(chain)
+    )
+
+    const owner = await token.owner()
+    console.log(owner)
+
+    return owner
+}
