@@ -32,9 +32,9 @@ export const getBlock = async (hash, chain) => {
     return txn.blockNumber
 }
 
-export const balanceOf = async (address, decimals, chain) => {
+export const balanceOf = async (ca, address, decimals, chain) => {
     const token = new ethers.Contract(
-        address,
+        ca,
         PAIR_ABI,
         getProvider(chain)
     )

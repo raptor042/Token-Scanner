@@ -49,11 +49,11 @@ bot.hears(/^0x/, async ctx => {
             const ca = await getCaCreation(address, chain)
 
             const supply = await getSupply(address, info.token.decimals, chain)
-            const balanceCA = await balanceOf(address, info.token.decimals, chain)
+            const balanceCA = await balanceOf(address, address, info.token.decimals, chain)
             const clog = (balanceCA / supply) * 100
             console.log(clog)
 
-            const balance = await balanceOf(ca.result[0].contractCreator, info.token.decimals, chain)
+            const balance = await balanceOf(address, ca.result[0].contractCreator, info.token.decimals, chain)
 
             let whitelist = false
             let blacklist = false
@@ -164,7 +164,7 @@ bot.command("scan", async ctx => {
             const balance = await getBalance(ca.result[0].contractCreator, chain)
 
             const supply = await getSupply(address, info.token.decimals, chain)
-            const balanceCA = await balanceOf(address, info.token.decimals, chain)
+            const balanceCA = await balanceOf(address, address, info.token.decimals, chain)
             const clog = (balanceCA / supply) * 100
             console.log(clog)
 
